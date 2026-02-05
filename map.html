@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resort Locations</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f5f5f5;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        .buttons {
+            margin: 20px;
+        }
+
+        .buttons button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            background: #ff385c;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background: #e61e4d;
+        }
+
+        iframe {
+            width: 90%;
+            height: 500px;
+            border-radius: 10px;
+            border: none;
+            background: white;
+        }
+
+        a {
+            display: inline-block;
+            margin: 20px;
+            text-decoration: none;
+            color: #ff385c;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Resort Locations</h2>
+
+<!-- Buttons -->
+
+<div class="buttons">
+
+    <button onclick="loadMap('goa')">🌴 Goa Beach Resort</button>
+
+    <button onclick="loadMap('mumbai')">🏙 Mumbai City Stay</button>
+
+    <button onclick="loadMap('coorg')">⛰ Coorg Hill Resort</button>
+
+    <button onclick="loadMap('capitol')">🏨 Capitol Hotel (Coorg)</button>
+
+</div>
+
+<!-- Map -->
+
+<iframe id="mapFrame"
+    src="https://www.google.com/maps?q=Goa+Beach+Resort&output=embed">
+</iframe>
+
+<br>
+
+<a href="home.html">⬅ Back</a>
+
+<!-- JavaScript -->
+
+<script>
+
+function loadMap(place) {
+
+    let map = document.getElementById("mapFrame");
+
+    if (place === "goa") {
+        map.src = "https://www.google.com/maps?q=Goa+Beach+Resort&output=embed";
+    }
+
+    else if (place === "mumbai") {
+        map.src = "https://www.google.com/maps?q=Mumbai+City+Hotel&output=embed";
+    }
+
+    else if (place === "coorg") {
+        map.src = "https://www.google.com/maps?q=Coorg+Hill+Resort&output=embed";
+    }
+
+    else if (place === "capitol") {
+        map.src = "https://www.google.com/maps?q=Capitol+Hotel+Coorg&output=embed";
+    }
+}
+
+</script>
+
+</body>
+</html>
