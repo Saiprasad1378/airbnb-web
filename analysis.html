@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | Mini Airbnb</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js for beautiful charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <h1>Analytics Dashboard</h1>
+        <div class="nav-links">
+            <a href="home.html" class="nav-btn">Back to Listings</a>
+            <a href="index.html" class="nav-btn">Logout</a>
+        </div>
+    </header>
+
+    <div class="analysis-container">
+
+        <!-- Property Selector -->
+        <div class="section-card full-width">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>📊 Performance Overview</h2>
+                <select id="propertySelect" onchange="updateDashboard()"
+                    style="padding:10px; border:1px solid #ddd; border-radius:8px; font-weight:600;">
+                    <option value="Global">All Properties (Global Average)</option>
+                    <option value="Goa">Goa Beachfront Villa</option>
+                    <option value="Mumbai">Mumbai Luxury Apt</option>
+                    <option value="NYC">NYC Penthouse</option>
+                    <option value="Swiss">Zermatt Chalet</option>
+                </select>
+            </div>
+            <p class="subtitle">Real-time insights for your selected property.</p>
+        </div>
+
+        <!-- Market Price Section -->
+        <div class="section-card">
+            <h2>Market Competitiveness</h2>
+            <p class="subtitle">Your price vs. local market average.</p>
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <span class="label">Market Avg</span>
+                    <span class="value" id="marketAvg">₹4,500</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">Your Price</span>
+                    <span class="value" id="yourPrice" style="color: #ff385c;">₹5,000</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">Score</span>
+                    <span class="value" style="color: green;">92%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit Analysis Section -->
+        <div class="section-card">
+            <h2>Profit Simulator</h2>
+            <p class="subtitle">Estimate monthly earnings interactively.</p>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Nightly Rate (₹): <input type="number" id="rate" value="5000"
+                        oninput="calculateProfit()"></label>
+                <label>Occupancy (Days/Month): <input type="range" id="days" min="0" max="30" value="20"
+                        oninput="calculateProfit()"></label>
+                <div style="text-align: right; font-weight: bold;" id="daysValue">20 Days</div>
+            </div>
+
+            <div class="result" style="background: #f7f7f7; padding: 20px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 14px; color: #717171;">Estimated Revenue</div>
+                <div id="estRevenue" class="highlight" style="font-size: 32px; font-weight: 800; color: #ff385c;">
+                    ₹100,000</div>
+            </div>
+
+            <div class="chart-container" style="height: 150px; margin-top: 20px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Trends -->
+        <div class="section-card full-width">
+            <h2>Demand Trends</h2>
+            <p class="subtitle">Projected occupancy for the next 6 months.</p>
+            <div class="chart-container wide">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Data Models ---
+        const propertyData = {
+            'Global': { market: 4500, price: 4125, trend: [65, 70, 75, 80, 85, 90] },
+            'Goa': { market: 6000, price: 5000, trend: [80, 85, 90, 60, 50, 40] }, // High in winter
+            'Mumbai': { market: 3000, price: 3500, trend: [70, 75, 70, 75, 80, 80] }, // Stable
+            'NYC': { market: 22000, price: 25000, trend: [50, 60, 70, 80, 90, 95] }, // Summer peak
+            'Swiss': { market: 28000, price: 30000, trend: [95, 90, 80, 70, 60, 50] } // Winter peak
+        };
+
+        // --- Charts Init ---
+        let priceChart, trendChart, revenueChart;
+
+        function initCharts() {
+            // Price Chart
+            const ctxPrice = document.getElementById('priceChart').getContext('2d');
+            priceChart = new Chart(ctxPrice, {
+                type: 'bar',
+                data: {
+                    labels: ['Market Avg', 'Your Price'],
+                    datasets: [{
+                        label: 'Price in ₹',
+                        data: [4500, 5000],
+                        backgroundColor: ['#e0e0e0', '#ff385c'],
+                        borderRadius: 8
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+            });
+
+            // Revenue Breakdown Chart
+            const ctxRev = document.getElementById('revenueChart').getContext('2d');
+            revenueChart = new Chart(ctxRev, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Profit', 'Exp'],
+                    datasets: [{
+                        data: [70, 30],
+                        backgroundColor: ['#ff385c', '#ddd'],
+                        borderWidth: 0,
+                        cutout: '70%'
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, maintainAspectRatio: false }
+            });
+
+            // Trends Chart
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            trendChart = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Occupancy %',
+                        data: [65, 70, 75, 80, 85, 90],
+                        borderColor: '#ff385c',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(255, 56, 92, 0.1)'
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+        }
+
+        // --- Interaction Logic ---
+        function updateDashboard() {
+            const selected = document.getElementById('propertySelect').value;
+            const data = propertyData[selected];
+
+            // Update Text
+            document.getElementById('marketAvg').innerText = '₹' + data.market.toLocaleString();
+            document.getElementById('yourPrice').innerText = '₹' + data.price.toLocaleString();
+
+            // Update Simulator Inputs
+            document.getElementById('rate').value = data.price;
+            calculateProfit();
+
+            // Update Charts
+            priceChart.data.datasets[0].data = [data.market, data.price];
+            priceChart.update();
+
+            trendChart.data.datasets[0].data = data.trend;
+            trendChart.update();
+        }
+
+        function calculateProfit() {
+            const rate = parseInt(document.getElementById('rate').value) || 0;
+            const days = parseInt(document.getElementById('days').value) || 0;
+            document.getElementById('daysValue').innerText = days + " Days";
+
+            const totalRevenue = rate * days;
+            document.getElementById('estRevenue').innerText = '₹' + totalRevenue.toLocaleString();
+
+            // Update simple profit margin visualization
+            // Assuming 30% expenses
+            revenueChart.data.datasets[0].data = [totalRevenue * 0.7, totalRevenue * 0.3];
+            revenueChart.update();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            calculateProfit();
+        });
+
+    </script>
+
+</body>
+
+</html>

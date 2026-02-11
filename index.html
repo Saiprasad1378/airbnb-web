@@ -1,22 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Mini Airbnb</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
-<body class="center">
 
-<div class="login-box">
-    <h2>Login</h2>
+<body>
 
-    <input type="text" id="user" placeholder="Username">
-    <input type="password" id="pass" placeholder="Password">
+    <div class="login-container">
 
-    <button onclick="login()">Login</button>
+        <!-- Left Side: Hero Image and Features -->
+        <div class="login-hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1>Welcome to your next adventure</h1>
+                <ul class="hero-features">
+                    <li>✨ Unique stays & experiences</li>
+                    <li>🛡️ Secure payments & verified hosts</li>
+                    <li>🌍 Travel like a local, anywhere</li>
+                    <li>💬 24/7 Support for your peace of mind</li>
+                </ul>
+            </div>
+        </div>
 
-    <p id="msg"></p>
-</div>
+        <!-- Right Side: Login Form -->
+        <div class="login-form-wrapper">
+            <div class="login-box">
+                <h2>Sign in to Airbnb</h2>
+                <p>Welcome back! Please enter your details.</p>
 
-<script src="script.js"></script>
+                <input type="text" id="user" placeholder="Username (admin)">
+                <input type="password" id="pass" placeholder="Password (1234)">
+
+                <button class="btn-primary" onclick="login()">Sign In</button>
+
+                <p id="msg" style="margin-top: 15px; font-size: 14px; text-align: center;"></p>
+
+                <div style="text-align: center; margin-top: 20px; font-size: 14px; color: #717171;">
+                    Don't have an account? <a href="#" style="color: #222; font-weight: 600;">Sign up</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
